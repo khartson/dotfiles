@@ -1,0 +1,12 @@
+[user]
+    name = Kyle
+    email = kylehartson@proton.me
+
+[core] 
+    editor = code --wait
+
+[init]
+    defaultBranch = main
+
+[pull]
+    rebase = true
