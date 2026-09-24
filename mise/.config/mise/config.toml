@@ -1,0 +1,20 @@
+# Single toolchain for Linux laptops, Proxmox SSH boxes, and devcontainers.
+# Install/update:  mise install   /   mise upgrade
+# Windows-native PowerShell is intentionally out of scope.
+
+[tools]
+node = "24"
+python = "3.13"
+ruby = "3.3"
+
+kubectl = "latest"
+helm = "latest"
+argocd = "latest"
+talos = "latest"
+terraform = "latest"
+starship = "latest"
+
+[settings]
+experimental = true
+# Prefer prebuilt CPython when mise has one; avoids compiling on lean SSH boxes.
+python.compile = false
