@@ -29,7 +29,9 @@ chmod +x install.sh
 ./install.sh
 ```
 
-That installs mise if needed, stows the packages, then runs `mise install`.
+That installs `zsh`, `stow`, and `mise` if needed, stows the packages, then runs
+`mise install`. If `zsh` isn't your login shell yet, run `chsh -s $(which zsh)`
+and open a new terminal so `.zshrc` (and therefore `mise`/`starship`) activates.
 
 Update tools later:
 

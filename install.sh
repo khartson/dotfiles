@@ -25,6 +25,20 @@ install_stow() {
     exit 1
 }
 
+install_zsh() {
+    if need_cmd zsh; then
+        return 0
+    fi
+    if need_cmd apt-get; then
+        echo "Installing zsh via apt..."
+        sudo apt-get update -qq
+        sudo apt-get install -y zsh
+        return 0
+    fi
+    echo "Error: zsh is required. Install it, then re-run $0" >&2
+    exit 1
+}
+
 install_mise() {
     if need_cmd mise; then
         return 0
@@ -48,6 +62,7 @@ backup_if_regular_file() {
 }
 
 install_stow
+install_zsh
 install_mise
 
 echo "Stowing configurations..."
@@ -73,3 +88,7 @@ echo
 echo "Dotfiles stowed and mise tools installed."
 echo "New shells pick up mise via .zshrc (eval \"\$(mise activate zsh)\")."
 echo "Update later with: mise upgrade"
+if [[ "${SHELL:-}" != *zsh ]]; then
+    echo "Your default shell is not zsh yet. Set it with: chsh -s \$(which zsh)"
+    echo "(then start a new terminal so mise/starship activate)"
+fi
