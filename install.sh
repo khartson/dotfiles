@@ -52,6 +52,31 @@ install_mise() {
     fi
 }
 
+install_oh_my_zsh() {
+    if [[ -d "${HOME}/.oh-my-zsh" ]]; then
+        return 0
+    fi
+    if ! need_cmd git; then
+        echo "Error: git is required to install oh-my-zsh." >&2
+        exit 1
+    fi
+    echo "Installing oh-my-zsh to ~/.oh-my-zsh..."
+    git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git "${HOME}/.oh-my-zsh"
+}
+
+install_fast_syntax_highlighting() {
+    local custom_dir="${HOME}/.oh-my-zsh/custom/plugins/fast-syntax-highlighting"
+    if [[ -d "$custom_dir" ]]; then
+        return 0
+    fi
+    if ! need_cmd git; then
+        echo "Error: git is required to install fast-syntax-highlighting." >&2
+        exit 1
+    fi
+    echo "Installing fast-syntax-highlighting plugin..."
+    git clone --depth=1 https://github.com/zdharma-continuum/fast-syntax-highlighting.git "$custom_dir"
+}
+
 backup_if_regular_file() {
     local path="$1"
     if [[ -e "$path" && ! -L "$path" ]]; then
@@ -64,6 +89,8 @@ backup_if_regular_file() {
 install_stow
 install_zsh
 install_mise
+install_oh_my_zsh
+install_fast_syntax_highlighting
 
 echo "Stowing configurations..."
 backup_if_regular_file "${HOME}/.zshrc"

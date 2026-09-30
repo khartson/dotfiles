@@ -25,6 +25,19 @@ zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' # case insensitive com
 [[ -d "$HOME/.local/bin" ]] && export PATH="$HOME/.local/bin:$PATH"
 
 # ==========================================
+# oh-my-zsh
+# ==========================================
+# Theme is unset so Starship (below) owns the prompt instead of oh-my-zsh.
+export ZSH="$HOME/.oh-my-zsh"
+ZSH_THEME=""
+# fast-syntax-highlighting must load last among plugins.
+plugins=(git fast-syntax-highlighting)
+# compinit already ran above; skip oh-my-zsh's own global compinit call.
+skip_global_compinit=1
+
+[[ -f "$ZSH/oh-my-zsh.sh" ]] && source "$ZSH/oh-my-zsh.sh"
+
+# ==========================================
 # Toolchain (mise) + prompt
 # ==========================================
 # User-space runtimes and CLIs from this repo's mise config.
