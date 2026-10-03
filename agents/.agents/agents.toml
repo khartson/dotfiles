@@ -2,4 +2,13 @@
 # Declare skills here, then apply them on an agent machine with: dotagents install
 # Install leaves skills, the lockfile, and agent links in ~/.agents.
 version = 1
-agents = ["cursor"]
+agents = ["cursor", "claude"]
+
+[[skills]]
+name='skill-creator'
+source='anthropics/skills'
+
+[[skills]]
+name='change-summary'
+source='khartson/dotagents'
+path='/skills'
