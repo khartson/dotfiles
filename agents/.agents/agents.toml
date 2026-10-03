@@ -11,4 +11,4 @@ source='anthropics/skills'
 [[skills]]
 name='change-summary'
 source='khartson/dotagents'
-path='/skills'
+path='/skills/change-summary'
