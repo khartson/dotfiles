@@ -5,7 +5,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT"
 
-stow_packages=(zsh git tmux mise starship)
+stow_packages=(zsh git tmux mise starship agents)
 
 need_cmd() {
     command -v "$1" >/dev/null 2>&1
@@ -98,8 +98,12 @@ backup_if_regular_file "${HOME}/.gitconfig"
 backup_if_regular_file "${HOME}/.tmux.conf"
 backup_if_regular_file "${HOME}/.config/mise/config.toml"
 backup_if_regular_file "${HOME}/.config/starship.toml"
+backup_if_regular_file "${HOME}/.agents/agents.toml"
 
 mkdir -p "${HOME}/.config"
+# Real directory so stow links agents.toml only. A missing ~/.agents would
+# fold into a symlink, and `dotagents install` would write skills into the repo.
+mkdir -p "${HOME}/.agents"
 for pkg in "${stow_packages[@]}"; do
     stow -v -R "$pkg"
 done
@@ -116,6 +120,7 @@ echo
 echo "Dotfiles stowed and mise tools installed."
 echo "New shells pick up mise via .zshrc (eval \"\$(mise activate zsh)\")."
 echo "Update later with: mise upgrade"
+echo "Agent config is stowed, but skills are not installed. On a machine where you use them: dotagents install"
 if [[ "${SHELL:-}" != *zsh ]]; then
     echo "Your default shell is not zsh yet. Set it with: chsh -s \$(which zsh)"
     echo "(then start a new terminal so mise/starship activate)"

@@ -13,10 +13,20 @@ instead.
 | `git/` | `~/.gitconfig` |
 | `tmux/` | `~/.tmux.conf` |
 | `mise/` | `~/.config/mise/config.toml` |
+| `starship/` | `~/.config/starship.toml` |
+| `agents/` | `~/.agents/agents.toml` |
 
 [mise](https://mise.jdx.dev/) is the version manager: Node, Python, and Ruby
 instead of nvm/pyenv/rvm, plus CLIs (kubectl, helm, argocd, talosctl,
-terraform, starship). Docker, Tailscale, and other services stay with the OS.
+terraform, starship, dotagents). Docker, Tailscale, and other services stay
+with the OS.
+
+npm registry CLIs are installed with mise's embedded [aube](https://mise.jdx.dev/dev-tools/backends/npm.html)
+installer (`npm.package_manager = "aube"`), not `npm install -g`. Node is
+still the runtime. `@sentry/dotagents` is pinned that way. Its global config
+stays at the default `~/.agents/`; only `agents.toml` is stowed. Skills, the
+lockfile, and per-agent links are created later with `dotagents install`, and
+`dotagents init` is not part of bootstrap.
 
 ## Bootstrap
 
@@ -32,6 +42,7 @@ chmod +x install.sh
 That installs `zsh`, `stow`, and `mise` if needed, stows the packages, then runs
 `mise install`. If `zsh` isn't your login shell yet, run `chsh -s $(which zsh)`
 and open a new terminal so `.zshrc` (and therefore `mise`/`starship`) activates.
+On a machine where you use coding agents, apply skills with `dotagents install`.
 
 Update tools later:
 

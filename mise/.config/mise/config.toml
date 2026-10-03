@@ -13,8 +13,14 @@ argocd = "latest"
 talos = "latest"
 terraform = "latest"
 starship = "latest"
+"npm:@sentry/dotagents" = "latest"
 
 [settings]
 experimental = true
 # Prefer prebuilt CPython when mise has one; avoids compiling on lean SSH boxes.
 python.compile = false
+
+[settings.npm]
+# npm: tools install with embedded aube, not npm -g. Dependency lifecycle
+# scripts stay denied unless a tool sets allow_builds.
+package_manager = "aube"
