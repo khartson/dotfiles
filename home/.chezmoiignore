@@ -1,0 +1,10 @@
+# Paths here are target paths (relative to ~), not source paths.
+{{ if eq .chezmoi.os "windows" }}
+.zshrc
+.tmux.conf
+.chezmoiscripts/linux/**
+{{ else }}
+Documents
+Documents/**
+.chezmoiscripts/windows/**
+{{ end }}

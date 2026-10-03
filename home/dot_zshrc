@@ -30,6 +30,10 @@ zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' # case insensitive com
 # Theme is unset so Starship (below) owns the prompt instead of oh-my-zsh.
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME=""
+# chezmoi refreshes ~/.oh-my-zsh (see .chezmoiexternal.toml.tmpl); don't self-update.
+zstyle ':omz:update' mode disabled
+# Keep runtime cache out of ~/.oh-my-zsh, which chezmoi manages exactly.
+export ZSH_CACHE_DIR="$HOME/.cache/oh-my-zsh"
 # fast-syntax-highlighting must load last among plugins.
 plugins=(git fast-syntax-highlighting)
 # compinit already ran above; skip oh-my-zsh's own global compinit call.

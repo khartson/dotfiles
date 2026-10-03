@@ -1,0 +1,14 @@
+# Re-runs whenever the mise config changes.
+# config hash: {{ include "dot_config/mise/config.toml" | sha256sum }}
+$ErrorActionPreference = 'Stop'
+
+# Pick up mise if winget installed it during this apply.
+$env:Path = [Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' +
+            [Environment]::GetEnvironmentVariable('Path', 'User')
+
+Write-Host 'Installing tools from mise config...'
+# Trust this config (mise blocks untrusted toml by default).
+mise trust (Join-Path $HOME '.config/mise/config.toml')
+if ($LASTEXITCODE -ne 0) { throw 'mise trust failed' }
+mise install
+if ($LASTEXITCODE -ne 0) { throw 'mise install failed' }

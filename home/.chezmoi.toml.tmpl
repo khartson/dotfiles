@@ -1,0 +1,7 @@
+{{- /* Generated into ~/.config/chezmoi/chezmoi.toml by `chezmoi init`. */ -}}
+{{ if eq .chezmoi.os "windows" -}}
+# Run .ps1 scripts with PowerShell 7, not Windows PowerShell 5.1.
+[interpreters.ps1]
+command = "pwsh"
+args = ["-NoLogo", "-NoProfile"]
+{{ end -}}

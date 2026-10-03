@@ -1,4 +1,4 @@
-# Global config. Stow links this file to ~/.agents/agents.toml.
+# Global config. chezmoi writes this file to ~/.agents/agents.toml.
 # Declare skills here, then apply them on an agent machine with: dotagents install
 # Install leaves skills, the lockfile, and agent links in ~/.agents.
 version = 1

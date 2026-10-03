@@ -1,6 +1,6 @@
-# Single toolchain for Linux laptops, Proxmox SSH boxes, and devcontainers.
-# Install/update:  mise install   /   mise upgrade
-# Windows-native PowerShell is intentionally out of scope.
+# Single toolchain for Linux laptops, Proxmox SSH boxes, devcontainers, and
+# Windows (pwsh). chezmoi re-runs `mise install` whenever this file changes.
+# Update:  mise upgrade
 
 [tools]
 node = "24"
@@ -13,6 +13,7 @@ argocd = "latest"
 talos = "latest"
 terraform = "latest"
 starship = "latest"
+chezmoi = "latest"
 "npm:@sentry/dotagents" = "latest"
 
 [settings]

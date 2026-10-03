@@ -1,127 +1,39 @@
 #!/usr/bin/env bash
-# Bootstrap GNU Stow + mise, then symlink this repo and install pinned tools.
+# Bootstrap a fresh Linux box: install mise, then let chezmoi (run through mise)
+# clone and apply this repo. All real setup lives in home/.chezmoiscripts.
+#
+#   curl -fsSL https://raw.githubusercontent.com/khartson/dotfiles/master/install.sh | bash
+#
+# Extra arguments go to `chezmoi init`, e.g. `bash -s -- --branch my-branch`.
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$ROOT"
-
-stow_packages=(zsh git tmux mise starship agents)
+repo="${DOTFILES_REPO:-khartson}"
 
 need_cmd() {
     command -v "$1" >/dev/null 2>&1
 }
 
-install_stow() {
-    if need_cmd stow; then
-        return 0
-    fi
+missing=()
+for cmd in curl git; do
+    need_cmd "$cmd" || missing+=("$cmd")
+done
+if (( ${#missing[@]} )); then
     if need_cmd apt-get; then
-        echo "Installing GNU Stow via apt..."
+        echo "Installing ${missing[*]} via apt..."
         sudo apt-get update -qq
-        sudo apt-get install -y stow
-        return 0
+        sudo apt-get install -y "${missing[@]}"
+    else
+        echo "Error: ${missing[*]} required. Install, then re-run." >&2
+        exit 1
     fi
-    echo "Error: GNU Stow is required. Install it, then re-run $0" >&2
-    exit 1
-}
+fi
 
-install_zsh() {
-    if need_cmd zsh; then
-        return 0
-    fi
-    if need_cmd apt-get; then
-        echo "Installing zsh via apt..."
-        sudo apt-get update -qq
-        sudo apt-get install -y zsh
-        return 0
-    fi
-    echo "Error: zsh is required. Install it, then re-run $0" >&2
-    exit 1
-}
-
-install_mise() {
-    if need_cmd mise; then
-        return 0
-    fi
+export PATH="${HOME}/.local/bin:${PATH}"
+if ! need_cmd mise; then
     echo "Installing mise to ~/.local/bin..."
     curl -fsSL https://mise.run | sh
-    export PATH="${HOME}/.local/bin:${PATH}"
-    if ! need_cmd mise; then
-        echo "Error: mise installed but not on PATH. Open a new shell or add ~/.local/bin to PATH." >&2
-        exit 1
-    fi
-}
-
-install_oh_my_zsh() {
-    if [[ -d "${HOME}/.oh-my-zsh" ]]; then
-        return 0
-    fi
-    if ! need_cmd git; then
-        echo "Error: git is required to install oh-my-zsh." >&2
-        exit 1
-    fi
-    echo "Installing oh-my-zsh to ~/.oh-my-zsh..."
-    git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git "${HOME}/.oh-my-zsh"
-}
-
-install_fast_syntax_highlighting() {
-    local custom_dir="${HOME}/.oh-my-zsh/custom/plugins/fast-syntax-highlighting"
-    if [[ -d "$custom_dir" ]]; then
-        return 0
-    fi
-    if ! need_cmd git; then
-        echo "Error: git is required to install fast-syntax-highlighting." >&2
-        exit 1
-    fi
-    echo "Installing fast-syntax-highlighting plugin..."
-    git clone --depth=1 https://github.com/zdharma-continuum/fast-syntax-highlighting.git "$custom_dir"
-}
-
-backup_if_regular_file() {
-    local path="$1"
-    if [[ -e "$path" && ! -L "$path" ]]; then
-        local bak="${path}.bak.$(date +%Y%m%d%H%M%S)"
-        echo "Backing up existing $path -> $bak"
-        mv "$path" "$bak"
-    fi
-}
-
-install_stow
-install_zsh
-install_mise
-install_oh_my_zsh
-install_fast_syntax_highlighting
-
-echo "Stowing configurations..."
-backup_if_regular_file "${HOME}/.zshrc"
-backup_if_regular_file "${HOME}/.gitconfig"
-backup_if_regular_file "${HOME}/.tmux.conf"
-backup_if_regular_file "${HOME}/.config/mise/config.toml"
-backup_if_regular_file "${HOME}/.config/starship.toml"
-backup_if_regular_file "${HOME}/.agents/agents.toml"
-
-mkdir -p "${HOME}/.config"
-# Real directory so stow links agents.toml only. A missing ~/.agents would
-# fold into a symlink, and `dotagents install` would write skills into the repo.
-mkdir -p "${HOME}/.agents"
-for pkg in "${stow_packages[@]}"; do
-    stow -v -R "$pkg"
-done
-
-echo "Installing tools from mise config..."
-export PATH="${HOME}/.local/bin:${PATH}"
-# Trust this repo's config (mise blocks untrusted toml by default).
-if [[ -L "${HOME}/.config/mise/config.toml" || -f "${HOME}/.config/mise/config.toml" ]]; then
-    mise trust "${HOME}/.config/mise/config.toml"
 fi
-mise install
 
-echo
-echo "Dotfiles stowed and mise tools installed."
-echo "New shells pick up mise via .zshrc (eval \"\$(mise activate zsh)\")."
-echo "Update later with: mise upgrade"
-echo "Agent config is stowed, but skills are not installed. On a machine where you use them: dotagents install"
-if [[ "${SHELL:-}" != *zsh ]]; then
-    echo "Your default shell is not zsh yet. Set it with: chsh -s \$(which zsh)"
-    echo "(then start a new terminal so mise/starship activate)"
-fi
+# chezmoi isn't installed yet; mise runs it once here, and the applied mise
+# config then installs it for good.
+mise exec chezmoi@latest -- chezmoi init --apply "$@" "$repo"
